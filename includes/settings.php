@@ -1,51 +1,65 @@
 <?php
+// Empêche l'accès direct
 if (!defined('ABSPATH')) {
-    exit; // Sécurité
+    exit;
 }
 
-// Ajouter la page d'administration
-function pn_add_admin_menu() {
-    add_options_page('Post Notification', 'Post Notification', 'manage_options', 'post_notification', 'pn_settings_page');
+// Ajouter une page de paramètres au menu admin
+function pn_add_settings_page() {
+    add_options_page(
+        'Paramètres Post Notification',
+        'Post Notification',
+        'manage_options',
+        'pn-settings',
+        'pn_render_settings_page'
+    );
 }
-add_action('admin_menu', 'pn_add_admin_menu');
+add_action('admin_menu', 'pn_add_settings_page');
 
-// Enregistrement des paramètres
-function pn_register_settings() {
-    register_setting('pn_options_group', 'pn_email_subject');
-    register_setting('pn_options_group', 'pn_email_content');
-    register_setting('pn_options_group', 'pn_recipient_email');
-}
-add_action('admin_init', 'pn_register_settings');
-
-// Affichage de la page des paramètres
-function pn_settings_page() {
+// Afficher la page des paramètres
+function pn_render_settings_page() {
     ?>
     <div class="wrap">
-        <h1>Post Notification</h1>
+        <h1>Paramètres de Post Notification</h1>
         <form method="post" action="options.php">
-            <?php settings_fields('pn_options_group'); ?>
-            <?php do_settings_sections('pn_options_group'); ?>
-            <table class="form-table">
-                <tr>
-                    <th scope="row">Sujet de l'email</th>
-                    <td><input type="text" name="pn_email_subject" value="<?php echo esc_attr(get_option('pn_email_subject', 'Nouvel article publié !')); ?>" class="regular-text" /></td>
-                </tr>
-                <tr>
-                    <th scope="row">Contenu de l'email</th>
-                    <td>
-                        <?php
-                        $content = get_option('pn_email_content', 'Un nouvel article a été publié : {post_title}. Consultez-le ici : {post_link}');
-                        wp_editor($content, 'pn_email_content', array('textarea_name' => 'pn_email_content', 'media_buttons' => false, 'textarea_rows' => 10));
-                        ?>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">Email personnalisé</th>
-                    <td><input type="email" name="pn_recipient_email" value="<?php echo esc_attr(get_option('pn_recipient_email', '')); ?>" class="regular-text" /></td>
-                </tr>
-            </table>
-            <?php submit_button(); ?>
+            <?php
+            settings_fields('pn_settings_group');
+            do_settings_sections('pn-settings');
+            submit_button();
+            ?>
         </form>
     </div>
     <?php
+}
+
+// Enregistrer les paramètres
+function pn_register_settings() {
+    register_setting('pn_settings_group', 'pn_custom_email');
+    register_setting('pn_settings_group', 'pn_email_subject');
+    register_setting('pn_settings_group', 'pn_email_content');
+
+    add_settings_section('pn_settings_section', 'Configuration des emails', null, 'pn-settings');
+
+    add_settings_field('pn_custom_email', 'Email personnalisé', 'pn_custom_email_callback', 'pn-settings', 'pn_settings_section');
+    add_settings_field('pn_email_subject', 'Sujet de l\'email', 'pn_email_subject_callback', 'pn-settings', 'pn_settings_section');
+    add_settings_field('pn_email_content', 'Contenu de l\'email', 'pn_email_content_callback', 'pn-settings', 'pn_settings_section');
+}
+add_action('admin_init', 'pn_register_settings');
+
+// Callback pour l'email personnalisé
+function pn_custom_email_callback() {
+    $email = get_option('pn_custom_email', '');
+    echo '<input type="email" name="pn_custom_email" value="' . esc_attr($email) . '" class="regular-text">';
+}
+
+// Callback pour le sujet de l'email
+function pn_email_subject_callback() {
+    $subject = get_option('pn_email_subject', 'Nouvel article publié');
+    echo '<input type="text" name="pn_email_subject" value="' . esc_attr($subject) . '" class="regular-text">';
+}
+
+// Callback pour le contenu de l'email (éditeur WYSIWYG)
+function pn_email_content_callback() {
+    $content = get_option('pn_email_content', 'Un nouvel article a été publié. Cliquez sur le lien ci-dessous pour le lire.');
+    wp_editor($content, 'pn_email_content', array('textarea_name' => 'pn_email_content', 'media_buttons' => false, 'textarea_rows' => 5));
 }

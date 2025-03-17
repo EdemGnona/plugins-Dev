@@ -1,47 +1,41 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Notification de publication</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notification Email</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            line-height: 1.6;
-            background-color: #f4f4f4;
+            background-color: #f9f9f9;
+            margin: 0;
             padding: 20px;
         }
-        .container {
-            max-width: 600px;
-            background: #fff;
+        .email-container {
+            background-color: #ffffff;
             padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
             margin: auto;
         }
         h1 {
-            color: #333;
+            color: #333333;
         }
         p {
-            font-size: 16px;
-            color: #555;
+            color: #555555;
         }
-        .button {
-            display: inline-block;
-            padding: 10px 15px;
-            font-size: 16px;
-            background: #0073aa;
-            color: #fff;
+        a {
+            color: #007BFF;
             text-decoration: none;
-            border-radius: 3px;
-            margin-top: 15px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Nouvel article publié !</h1>
-        <p><?php echo nl2br(esc_html($content)); ?></p>
-        <p><a href="<?php echo esc_url(get_permalink($post_id)); ?>" class="button">Lire l'article</a></p>
+    <div class="email-container">
+        <h1>{{title}}</h1>
+        <p>{{content}}</p>
+        <p><a href="{{link}}">Lire l'article complet</a></p>
     </div>
 </body>
 </html>
