@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Post Notification
- * Plugin URI: https://example.com/
+ * Plugin URI: https://gnonabiova.com/#
  * Description: Envoie des notifications par email à chaque publication d'un article.
  * Version: 1.0
  * Author: GNONA BIOVA
